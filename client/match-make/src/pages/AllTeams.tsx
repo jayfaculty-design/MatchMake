@@ -43,7 +43,7 @@ const AllTeams = () => {
   const { teamDetails, getTeamDetails } = teamContext;
   const [receiverId, setReceiverId] = useState<number | null>(null);
 
-  const team1_Id = teamDetails.id;
+  const team1_Id = teamDetails?.id;
 
   const form = useForm({
     mode: "uncontrolled",
@@ -116,7 +116,7 @@ const AllTeams = () => {
     }
   };
 
-  const openSendChallengeModal = (team) => {
+  const openSendChallengeModal = (team: { id: number }) => {
     setReceiverId(team.id);
     setOpened(true);
   };
@@ -130,23 +130,18 @@ const AllTeams = () => {
   }, []);
 
   return (
-    <main className="flex flex-col  pt-24 px-5 gap-5 md:px-5 lg:px-5 pb-5">
-      {/* <div className="flex flex-wrap justify-between items-center gap-4">
-        <p className="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em] min-w-72">
-          Find a Team
-        </p>
-      </div> */}
+    <main className="flex flex-col pt-24 px-5 gap-5 md:px-5 lg:px-5 pb-5">
       <div className="flex flex-col md:flex-row gap-4 items-center">
         <div className="grow w-full flex justify-center">
           <label className="flex flex-col min-w-40 h-12 w-full md:w-1/2">
             <div className="flex w-full flex-1 items-stretch rounded-lg h-full">
-              <div className="text-slate-400 dark:text-[#92adc9] flex border-none bg-white dark:bg-[#233648] items-center justify-center pl-4 rounded-l-lg border-r-0">
+              <div className="text-[#92adc9] flex border-none bg-[#233648] items-center justify-center pl-4 rounded-l-lg border-r-0">
                 <span className="material-symbols-outlined text-2xl">
                   <BiSearch />
                 </span>
               </div>
               <input
-                className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-0 border-none bg-white dark:bg-[#233648] focus:border-none h-full placeholder:text-slate-400 dark:placeholder:text-[#92adc9] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#233648] focus:border-none h-full placeholder:text-[#92adc9] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                 placeholder="Search by team name..."
                 value=""
               />
@@ -182,7 +177,7 @@ const AllTeams = () => {
             return (
               <div
                 key={team.id}
-                className="flex flex-col gap-4 p-4 rounded-xl bg-white dark:bg-[#1A2836] border border-slate-200 dark:border-[#233648] hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                className="flex flex-col gap-4 p-4 rounded-xl bg-[#1A2836] border border-[#233648] hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="flex items-center gap-4">
                   <div
@@ -193,10 +188,10 @@ const AllTeams = () => {
                     }}
                   ></div>
                   <div className="grow">
-                    <p className="text-slate-900 capitalize dark:text-white text-lg font-bold leading-normal">
+                    <p className="text-white capitalize text-lg font-bold leading-normal">
                       {team.name || `Team ${team.id}`}
                     </p>
-                    <div className="flex items-center gap-1 text-slate-500 dark:text-[#92adc9]">
+                    <div className="flex items-center gap-1 text-[#92adc9]">
                       <span className="material-symbols-outlined text-sm">
                         <CiLocationOn />
                       </span>
@@ -205,7 +200,7 @@ const AllTeams = () => {
                       </p>
                     </div>
                     {team1_Id === team.id ? (
-                      <div className="flex items-center gap-1 text-slate-500 dark:text-yellow-500">
+                      <div className="flex items-center gap-1 text-yellow-500">
                         <span className="material-symbols-outlined text-sm">
                           <BiUserPin />
                         </span>
@@ -241,14 +236,14 @@ const AllTeams = () => {
                     onClick={() => {
                       openSendChallengeModal(team);
                     }}
-                    disabled={team.id === teamDetails.id || hasSent}
+                    disabled={team.id === teamDetails?.id || hasSent}
                     className=""
                   >
                     {hasSent ? "Challenge sent" : "Send Challenge"}
                   </Button>
                   <Button
                     bg={"cyan"}
-                    className="flex-1 flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-slate-100 dark:bg-[#233648] text-slate-800 dark:text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                    className="flex-1 flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#233648] text-white text-sm font-bold leading-normal tracking-[0.015em]"
                   >
                     View Profile
                   </Button>
@@ -257,33 +252,7 @@ const AllTeams = () => {
             );
           })}
       </div>
-      {/* <div className="flex items-center justify-center pt-8">
-        <div className="flex items-center gap-2">
-          <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-slate-100 dark:bg-[#233648] text-slate-600 dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
-            <span className="material-symbols-outlined text-xl">
-              <BiChevronLeft />
-            </span>
-          </button>
-          <button className="flex w-10 h-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary text-white text-sm font-bold">
-            1
-          </button>
-          <button className="flex w-10 h-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg text-slate-600 dark:text-white text-sm font-medium">
-            2
-          </button>
-          <button className="flex w-10 h-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg text-slate-600 dark:text-white text-sm font-medium">
-            3
-          </button>
-          <span className="text-slate-600 dark:text-white">...</span>
-          <button className="flex w-10 h-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg text-slate-600 dark:text-white text-sm font-medium">
-            8
-          </button>
-          <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-slate-100 dark:bg-[#233648] text-slate-600 dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
-            <span className="material-symbols-outlined text-xl">
-              <BiChevronRight />
-            </span>
-          </button>
-        </div>
-      </div> */}
+
       <Modal
         title="Send a Challenge"
         opened={opened}

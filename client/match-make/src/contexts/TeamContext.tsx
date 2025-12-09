@@ -1,15 +1,23 @@
 import axios from "axios";
 import { createContext, useState, type PropsWithChildren } from "react";
 
+interface TeamDetailsProps {
+  id: number;
+  name: string;
+  email: string;
+  skill_level: string;
+  location: string;
+}
+
 interface TeamProps {
   getTeamDetails: () => {};
-  teamDetails: [];
+  teamDetails: TeamDetailsProps | null;
 }
 
 export const TeamContext = createContext<TeamProps | null>(null);
 
 export const TeamProvider = ({ children }: PropsWithChildren) => {
-  const [teamDetails, setTeamDetails] = useState([]);
+  const [teamDetails, setTeamDetails] = useState<TeamDetailsProps | null>(null);
   const getTeamDetails = async () => {
     const token = localStorage.getItem("token");
     try {

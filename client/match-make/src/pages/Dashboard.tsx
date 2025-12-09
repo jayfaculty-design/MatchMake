@@ -311,21 +311,21 @@ const Dashboard = () => {
               <div className="flex flex-col gap-4 items-start bg-[#192633] p-6 rounded-xl shadow-lg">
                 <div
                   className="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-24 w-24 border-2 border-primary"
-                  data-alt={`${teamDetails.name} logo`}
+                  data-alt={`${teamDetails?.name} logo`}
                   style={{
                     backgroundImage: "url('/emblem.png')",
                   }}
                 ></div>
                 <div className="flex flex-col justify-center gap-1">
                   <p className="text-whit capitalizee text-[22px] font-bold leading-tight tracking-[-0.015em]">
-                    {teamDetails.name || `Team ${teamDetails.id}`}
+                    {teamDetails?.name || `Team ${teamDetails?.id}`}
                   </p>
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-base text-[#92adc9]">
                       <GrLocation />
                     </span>
                     <p className="text-[#92adc9] capitalize text-sm font-normal leading-normal">
-                      {teamDetails.location || `Unknown location`}
+                      {teamDetails?.location ?? `Unknown location`}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -333,7 +333,7 @@ const Dashboard = () => {
                       <FiShield />
                     </span>
                     <p className="text-[#92adc9] capitalize text-sm font-normal leading-normal">
-                      Skill Level: {teamDetails.skill_level}
+                      Skill Level: {teamDetails?.skill_level ?? "Pro"}
                     </p>
                   </div>
                 </div>

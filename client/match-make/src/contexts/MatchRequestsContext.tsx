@@ -96,6 +96,7 @@ interface MatchRequestsProps {
     success: boolean;
     message: string;
   }>;
+  getAllChallenges: () => {};
 }
 
 export const MatchRequestsContext = createContext<MatchRequestsProps | null>(
