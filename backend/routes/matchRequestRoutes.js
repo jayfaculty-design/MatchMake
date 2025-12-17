@@ -261,8 +261,8 @@ router.get("/challenges/received", authMiddleware, async (req, res) => {
   }
 });
 
-// accept match request
-router.post("/:id/accept", authMiddleware, async (req, res) => {
+// join a match request
+router.post("/:id/join", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const team2_id = req.team.id;
@@ -279,51 +279,70 @@ router.post("/:id/accept", authMiddleware, async (req, res) => {
 
     if (request.status !== "open")
       return res.status(400).json({
-        message: "Match request is already accepted or closed",
+        message: "Match request has already been closed",
       });
 
-    // preventing the same team from accepting their own request
+    // preventing the same team from joining their own request
     if (request.team_id === team2_id)
       return res.status(403).json({
-        message: "Cannot accept your own match request",
+        message: "Cannot join your own match request",
       });
 
-    // creating a new match record
-    const newMatchInsert = await db.query(
-      `
-            INSERT INTO matches (team1_id, team2_id, date, time, location, status, team_2_name) 
-            VALUES ($1, $2, $3, $4, $5, 'upcoming', $6)
-            RETURNING *
-        `,
-      [
-        request.team_id,
-        team2_id,
-        request.date,
-        request.time,
-        request.location,
-        request.team_name,
-      ]
-    );
-    const match = newMatchInsert.rows[0];
+    // get the team_2 info
+    const getTeam2Info = await db.query(`SELECT * FROM teams WHERE id = $1`, [
+      team2_id,
+    ]);
+    const team2 = getTeam2Info.rows[0];
 
-    // updating the match request status to accepted
-    await db.query(
-      `
-        UPDATE match_requests
-        SET status = 'accepted'
-        WHERE id = $1
-        `,
-      [id]
+    // joining a match request
+    const match = await db.query(
+      `INSERT into teams_joined_requests(team_id, team_name, team_location, team_skill_level, match_request_id, request_owner_id)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *`,
+      [
+        team2_id,
+        team2.name,
+        team2.location,
+        team2.skill_level,
+        request.id,
+        request.team_id,
+      ]
     );
 
     res.status(201).json({
-      message: "Match accepted successfully",
+      message: "Joined request successfully",
       match: match,
     });
   } catch (error) {
-    console.error("Failed to accept match request", error);
+    console.error("Failed to join match request", error);
     res.status(404).json({
-      message: "Failed to accept match request",
+      message: "Failed to join match request",
+    });
+  }
+});
+
+// get received match requests
+router.get("/received-requests", authMiddleware, async (req, res) => {
+  const team_id = req.team.id;
+  try {
+    const team = await db.query(
+      `SELECT * FROM teams_joined_requests  
+       WHERE request_owner_id = $1`,
+      [team_id]
+    );
+
+    if (team.rows.length === 0)
+      return res.status(403).json({
+        message: "No team has joined your request",
+      });
+    res.json({
+      message: "Received match requests successfully",
+      receivedRequests: team.rows,
+    });
+  } catch (error) {
+    console.error("Something went wrong", error);
+    res.status(500).json({
+      message: "Something went wrong",
     });
   }
 });

@@ -20,6 +20,7 @@ interface MatchRequestsProps {
   getTeamMatchRequests: () => {};
   loading: {
     getTeamMatchRequests: boolean;
+    getReceivedRequests: boolean;
     getOpenedRequest: boolean;
     acceptMatchRequest: boolean;
     rejectMatchRequest: boolean;
@@ -128,6 +129,7 @@ export const MatchRequestsProvider = ({ children }: PropsWithChildren) => {
     []
   );
   const [sentChallenges, setSentChallenges] = useState<Challenges[]>([]);
+  const [receivedRequests, setReceivedRequests] = useState([]);
 
   const getTeamMatchRequests = async () => {
     setLoading((prev) => ({ ...prev, getTeamMatchRequests: true }));
@@ -296,7 +298,7 @@ export const MatchRequestsProvider = ({ children }: PropsWithChildren) => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        `http://localhost:3000/match-requests/${id}/accept`,
+        `http://localhost:3000/match-requests/${id}/join`,
         {},
         {
           headers: {
@@ -305,9 +307,6 @@ export const MatchRequestsProvider = ({ children }: PropsWithChildren) => {
         }
       );
       const data = response.data;
-      setOpenedRequests((prev) =>
-        prev.map((request) => (request.id === id ? data.match : request))
-      );
       return {
         success: true,
         message: data.message,
@@ -318,6 +317,26 @@ export const MatchRequestsProvider = ({ children }: PropsWithChildren) => {
       return { success: false, message: errorMessage };
     } finally {
       setLoading((prev) => ({ ...prev, acceptMatchRequest: false }));
+    }
+  };
+
+  // get all teams that has joined request
+  const getReceivedRequests = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/match-requests/received-requests",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response.data;
+      setReceivedRequests(data.receivedRequests);
+      console.log("Received Requests", data.receivedRequests);
+    } catch (error: any) {
+      console.error("Something went wrong, not received", error);
     }
   };
 
@@ -530,6 +549,8 @@ export const MatchRequestsProvider = ({ children }: PropsWithChildren) => {
         sentChallenges,
         loadChallenges,
         deleteSentChallenges,
+        getReceivedRequests,
+        receivedRequests,
       }}
     >
       {children}

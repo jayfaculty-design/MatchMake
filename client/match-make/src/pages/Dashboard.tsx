@@ -84,6 +84,8 @@ const Dashboard = () => {
     sentChallenges,
     loadChallenges,
     deleteSentChallenges,
+    getReceivedRequests,
+    receivedRequests,
   } = matchRequestsContext;
   const fetchTeamData = async () => {
     const token = localStorage.getItem("token");
@@ -109,6 +111,7 @@ const Dashboard = () => {
     getTeamDetails();
     getAllChallenges();
     getSentChallenges();
+    getReceivedRequests();
   }, []);
 
   function convertTo12Hour(time24: any) {
@@ -171,6 +174,11 @@ const Dashboard = () => {
       toast.error("Something went wrong");
     }
   };
+
+  // // handle received requests
+  // const handleReceivedRequests = async () => {
+  //   const requests = await getReceivedRequests();
+  // };
 
   // edit match request
   const openEditModal = (request) => {
@@ -428,7 +436,7 @@ const Dashboard = () => {
 
               <div className="flex flex-col gap-5">
                 <h2 className="text-white flex items-center gap-1 text-[22px] font-bold leading-tight tracking-[-0.015em]">
-                  Incoming Match Challenges
+                  Received Match Challenges
                   <span className="bg-white text-xs text-[#192633] w-4 h-4 flex items-center justify-center rounded-full">
                     {receivedChallenges.length}
                   </span>
@@ -639,63 +647,57 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Received Match request */}
+              {/* Teams joined my match requests */}
 
               <div className="flex flex-col gap-5">
                 <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">
-                  Incoming Match Requests
+                  Received Match Requests
                 </h2>
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-4 rounded-xl bg-[#192633] p-5 shadow-[0_0_4px_rgba(0,0,0,0.1)]">
-                    {loading.getAcceptedRequests && (
+                    {loading.getReceivedRequests && (
                       <div className="h-[10vh] flex items-center justify-center">
                         <Loader size={20} />
                       </div>
                     )}
-                    {acceptedRequests.length === 0 && (
+                    {receivedRequests.length === 0 && (
                       <div className="h-[10vh] flex items-center justify-center">
-                        <p>No team has accepted your request yet</p>
+                        <p>No team has joined your requests yet</p>
                       </div>
                     )}
-                    {acceptedRequests.map((request) => (
+                    {receivedRequests.map((request) => (
                       <div className="flex items-center gap-4 border-b border-b-[#233648] pb-4">
-                        <div className="flex flex-col items-center justify-center text-center p-2 rounded-lg bg-[#233648] min-w-[64px]">
-                          <p className="text-white text-sm font-bold leading-normal uppercase">
-                            NOV
-                          </p>
-                          <p className="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">
-                            04
-                          </p>
-                        </div>
+                        <img
+                          className="h-14 w-14 flex-shrink-0 rounded-lg bg-gray-700 p-1"
+                          data-alt="team logo"
+                          alt={`${request.team_name} logo`}
+                          src="/emblem.png"
+                        />
                         <div className="flex flex-1 flex-col gap-1">
                           <p className="text-white text-lg font-bold leading-tight">
-                            vs {request.team_2_name}
+                            {request.team_name}
                           </p>
                           <div className="flex items-center gap-2 text-sm text-[#92adc9]">
                             <span className="material-symbols-outlined text-base">
-                              <MdOutlineSchedule />
+                              <FiShield />
                             </span>
-                            <span>
-                              {formatDate(request.date)} @{" "}
-                              {convertTo12Hour(request.time)}
+                            <span className="capitalize">
+                              {request.team_skill_level}
                             </span>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-[#92adc9]">
                             <span className="material-symbols-outlined text-base">
                               <GrLocation />
                             </span>
-                            <span>{request.location}</span>
+                            <span>{request.team_location}</span>
                           </div>
                         </div>
                         <Button
                           justify="center"
-                          leftSection={
-                            <MdOutlineVisibility className="text-base" />
-                          }
-                          color="cyan"
+                          leftSection={<BiCheckCircle className="text-base" />}
                           className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#233648] text-white gap-2 text-sm font-medium leading-normal w-fit hover:bg-primary transition-colors"
                         >
-                          <span className="truncate">View Details</span>
+                          <span className="truncate">Accept</span>
                         </Button>
                       </div>
                     ))}
